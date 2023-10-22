@@ -1,22 +1,23 @@
-const http = require('http');
-const fs = require('fs/promises');
-const url = require('url');
+const express = require('express');
+const app = express();
+const port = 3000;
 
-http.createServer(async (request, result) => {
-    const myUrl = url.parse(request.url, true);
-    
-    let filename;
-    if(myUrl.pathname === '/') filename = './index.html';
-    else filename = '.' + myUrl.pathname + '.html';
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
 
-    try {
-        const data = await fs.readFile(filename, { encoding: 'utf8' });
-        result.writeHead(200, {'Content-Type': 'text/html'});
-        result.write(data);
-    }
-    catch(error) {
-        const data = await fs.readFile('./404.html', { encoding: 'utf8' });
-        result.writeHead(404, {'Content-Type': 'text/html'});
-        result.write(data);
-    }
-}).listen(8080);
+app.get('/about', (req, res) => {
+    res.sendFile(__dirname + '/about.html');
+});
+
+app.get('/contact-me', (req, res) => {
+    res.sendFile(__dirname + '/contact-me.html');
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(__dirname + '/404.html', 404);
+});
+
+app.listen(port, () => {
+    console.log(`server started listening on port ${port}`);
+});
